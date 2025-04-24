@@ -19,8 +19,7 @@ A lightweight ASP.NET Core web application that provides a human-readable invent
 - Clean, responsive Bootstrap UI
 
 ## Screenshot
-
-![Certificate Inventory Screenshot](https://via.placeholder.com/800x450.png?text=Certificate+Inventory+Screenshot)
+![image](https://github.com/user-attachments/assets/5ef0925e-9ec5-425d-9ed6-a0abe288925d)
 
 ## Deployment
 
