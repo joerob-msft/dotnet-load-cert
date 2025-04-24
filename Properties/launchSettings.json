@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "AzureCertInventory": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:56325;http://localhost:56326"
+    }
+  }
+}
