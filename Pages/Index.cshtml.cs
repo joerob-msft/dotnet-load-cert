@@ -15,17 +15,13 @@ namespace AzureCertInventory.Pages
             _certificateService = certificateService;
         }
 
-        public IEnumerable<CertificateInfo> PublicCertificates { get; private set; } = Enumerable.Empty<CertificateInfo>();
         public IEnumerable<CertificateInfo> PrivateCertificates { get; private set; } = Enumerable.Empty<CertificateInfo>();
-        public string CurrentTime { get; private set; } = "2025-04-24 19:12:03"; // Updated time
-        public string CurrentUser { get; private set; } = "joerob-msft"; // Using provided username
         public string Hostname { get; private set; } = "Unknown";
         public string CertificateEnvironmentVariable { get; private set; } = "Not set";
         public string AppServicePlan { get; private set; } = "Unknown";
 
         public void OnGet()
         {
-            PublicCertificates = _certificateService.GetPublicCertificates();
             PrivateCertificates = _certificateService.GetPrivateCertificates();
 
             // Get hostname
