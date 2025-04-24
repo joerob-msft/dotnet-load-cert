@@ -24,13 +24,13 @@ namespace AzureCertInventory.Services
 
             try
             {
-                // Get certificates ONLY from the My store (personal certificates)
-                using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+                // Changed to CurrentUser MY store instead of LocalMachine
+                using var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
                 store.Open(OpenFlags.ReadOnly);
 
                 foreach (var cert in store.Certificates)
                 {
-                    certificates.Add(GetCertificateDetails(cert, StoreName.My.ToString(), StoreLocation.LocalMachine.ToString()));
+                    certificates.Add(GetCertificateDetails(cert, StoreName.My.ToString(), StoreLocation.CurrentUser.ToString()));
                 }
             }
             catch (Exception ex)
