@@ -1,0 +1,260 @@
+openapi: 3.1.0
+info:
+  title: Azure Certificate Inventory API
+  description: |
+    API for managing and retrieving certificate information from Azure App Service and local certificate stores.
+    This application provides functionality to view certificates loaded into the application context and
+    retrieve details about their validity, expiration, and properties.
+  version: 1.0.0
+  contact:
+    name: Azure Certificate Inventory
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://localhost:7000
+    description: Development server (HTTPS)
+  - url: http://localhost:5000
+    description: Development server (HTTP)
+
+paths:
+  /:
+    get:
+      summary: Get application homepage
+      description: Returns the main page of the certificate inventory application
+      operationId: getHomepage
+      responses:
+        '200':
+          description: Successful response with HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+                description: HTML page content
+      tags:
+        - Web Pages
+
+  /api/certificates/private:
+    get:
+      summary: Get private certificates
+      description: Retrieve all private certificates from the current user's certificate store
+      operationId: getPrivateCertificates
+      responses:
+        '200':
+          description: Successful response with private certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CertificateInfo'
+              examples:
+                successExample:
+                  summary: Example of successful certificate retrieval
+                  value:
+                    - name: "My SSL Certificate"
+                      storeName: "My"
+                      storeLocation: "CurrentUser"
+                      subject: "CN=example.com, O=Example Corp, C=US"
+                      issuer: "CN=DigiCert SHA2 Secure Server CA, O=DigiCert Inc, C=US"
+                      serialNumber: "01234567890ABCDEF"
+                      validFrom: "2024-01-01 00:00:00 UTC"
+                      validUntil: "2025-01-01 00:00:00 UTC"
+                      status: "Valid"
+                      daysLeft: 127
+                      thumbprint: "ABCDEF1234567890ABCDEF1234567890ABCDEF12"
+                      hasPrivateKey: true
+                errorExample:
+                  summary: Example when certificate store access fails
+                  value:
+                    - name: "Error"
+                      error: "Failed to access certificate store: Access denied"
+        '500':
+          description: Internal server error when accessing certificate store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Certificates
+
+  /api/certificates/public:
+    get:
+      summary: Get public certificates
+      description: Retrieve all public certificates (currently returns empty list as per implementation)
+      operationId: getPublicCertificates
+      responses:
+        '200':
+          description: Successful response with public certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CertificateInfo'
+              examples:
+                emptyResponse:
+                  summary: Empty response as per current implementation
+                  value: []
+      tags:
+        - Certificates
+
+  /api/system/info:
+    get:
+      summary: Get system information
+      description: Retrieve system information including hostname, certificate environment variables, and app service plan details
+      operationId: getSystemInfo
+      responses:
+        '200':
+          description: Successful response with system information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemInfo'
+              examples:
+                azureAppService:
+                  summary: Example from Azure App Service
+                  value:
+                    hostname: "myapp.azurewebsites.net"
+                    certificateEnvironmentVariable: "*"
+                    appServicePlan: "Standard"
+                localDevelopment:
+                  summary: Example from local development
+                  value:
+                    hostname: "DESKTOP-ABC123"
+                    certificateEnvironmentVariable: "Not set"
+                    appServicePlan: "Unknown"
+      tags:
+        - System
+
+components:
+  schemas:
+    CertificateInfo:
+      type: object
+      description: Information about a certificate
+      properties:
+        name:
+          type: string
+          description: Friendly name of the certificate or extracted from subject
+          example: "My SSL Certificate"
+        storeName:
+          type: string
+          nullable: true
+          description: Name of the certificate store
+          example: "My"
+        storeLocation:
+          type: string
+          nullable: true
+          description: Location of the certificate store
+          example: "CurrentUser"
+        subject:
+          type: string
+          nullable: true
+          description: Certificate subject
+          example: "CN=example.com, O=Example Corp, C=US"
+        issuer:
+          type: string
+          nullable: true
+          description: Certificate issuer
+          example: "CN=DigiCert SHA2 Secure Server CA, O=DigiCert Inc, C=US"
+        serialNumber:
+          type: string
+          nullable: true
+          description: Certificate serial number
+          example: "01234567890ABCDEF"
+        validFrom:
+          type: string
+          nullable: true
+          description: Certificate valid from date in UTC
+          example: "2024-01-01 00:00:00 UTC"
+        validUntil:
+          type: string
+          nullable: true
+          description: Certificate valid until date in UTC
+          example: "2025-01-01 00:00:00 UTC"
+        status:
+          type: string
+          description: Certificate status
+          enum: [Valid, Warning, Expired]
+          example: "Valid"
+        daysLeft:
+          type: integer
+          nullable: true
+          description: Number of days until certificate expires
+          example: 127
+        thumbprint:
+          type: string
+          nullable: true
+          description: Certificate thumbprint
+          example: "ABCDEF1234567890ABCDEF1234567890ABCDEF12"
+        hasPrivateKey:
+          type: boolean
+          nullable: true
+          description: Whether the certificate has a private key
+          example: true
+        error:
+          type: string
+          nullable: true
+          description: Error message if certificate processing failed
+          example: "Error processing certificate: Access denied"
+      required:
+        - name
+        - status
+
+    SystemInfo:
+      type: object
+      description: System information and environment details
+      properties:
+        hostname:
+          type: string
+          description: Current hostname
+          example: "myapp.azurewebsites.net"
+        certificateEnvironmentVariable:
+          type: string
+          description: Value of WEBSITE_LOAD_CERTIFICATES environment variable
+          example: "*"
+        appServicePlan:
+          type: string
+          description: Azure App Service plan tier
+          example: "Standard"
+      required:
+        - hostname
+        - certificateEnvironmentVariable
+        - appServicePlan
+
+    ErrorResponse:
+      type: object
+      description: Error response
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Internal server error"
+        details:
+          type: string
+          nullable: true
+          description: Additional error details
+          example: "Failed to access certificate store: Access denied"
+      required:
+        - error
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Optional JWT bearer token authentication
+
+tags:
+  - name: Certificates
+    description: Operations related to certificate management
+  - name: System
+    description: System information and environment details
+  - name: Web Pages
+    description: Web page endpoints
+
+# Note: The API endpoints described here are potential endpoints based on the existing
+# services and models in the application. The current implementation only provides
+# Razor Pages endpoints. To implement these API endpoints, you would need to add
+# API controllers or minimal API endpoints to the Program.cs file.
