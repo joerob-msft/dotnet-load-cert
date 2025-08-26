@@ -79,7 +79,127 @@ paths:
       tags:
         - Certificates
 
-  /api/cert-inventory/certificates/public:
+  /api/cert-inventory/certificates/appservice:
+    get:
+      summary: Get App Service certificates
+      description: Retrieve certificates loaded via WEBSITE_LOAD_CERTIFICATES environment variable
+      operationId: getAppServiceCertificates
+      responses:
+        '200':
+          description: Successful response with App Service certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CertificateInfo'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Certificates
+
+  /api/cert-inventory/certificates/loaded:
+    get:
+      summary: Get loaded certificates
+      description: Retrieve certificates currently loaded in application memory
+      operationId: getLoadedCertificates
+      responses:
+        '200':
+          description: Successful response with loaded certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CertificateInfo'
+      tags:
+        - Certificates
+
+  /api/cert-inventory/certificates/load:
+    post:
+      summary: Load certificate into memory
+      description: Load a certificate into application memory (App Service compatible)
+      operationId: loadCertificate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificateImportRequest'
+      responses:
+        '200':
+          description: Certificate loaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificateInfo'
+        '400':
+          description: Invalid certificate data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Certificates
+
+  /api/cert-inventory/certificates/validate:
+    post:
+      summary: Validate certificate
+      description: Validate a certificate by thumbprint with comprehensive checks
+      operationId: validateCertificate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificateValidationRequest'
+      responses:
+        '200':
+          description: Validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificateValidationResult'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Certificates
+
+  /api/cert-inventory/certificates/loaded/{thumbprint}:
+    delete:
+      summary: Remove certificate from memory
+      description: Remove a certificate from application memory
+      operationId: removeLoadedCertificate
+      parameters:
+        - name: thumbprint
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Certificate thumbprint
+      responses:
+        '200':
+          description: Certificate removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificateOperationResponse'
+        '404':
+          description: Certificate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Certificates
     get:
       summary: Get public certificates
       description: Retrieve all public certificates (currently returns empty list as per implementation)
@@ -238,6 +358,108 @@ components:
           example: "Failed to access certificate store: Access denied"
       required:
         - error
+
+    CertificateImportRequest:
+      type: object
+      description: Request for importing a certificate
+      properties:
+        certificateData:
+          type: string
+          description: Base64 encoded certificate data
+          example: "MIIFjTCCA3WgAwIBAgIQ..."
+        password:
+          type: string
+          nullable: true
+          description: Optional password for encrypted certificates
+          example: "mypassword123"
+        friendlyName:
+          type: string
+          nullable: true
+          description: Optional friendly name for the certificate
+          example: "My SSL Certificate"
+      required:
+        - certificateData
+
+    CertificateValidationRequest:
+      type: object
+      description: Request for certificate validation
+      properties:
+        thumbprint:
+          type: string
+          description: Certificate thumbprint to validate
+          example: "ABCDEF1234567890ABCDEF1234567890ABCDEF12"
+        validateChain:
+          type: boolean
+          description: Whether to validate the certificate chain
+          example: true
+        checkRevocation:
+          type: boolean
+          description: Whether to check certificate revocation
+          example: false
+        testUrl:
+          type: string
+          nullable: true
+          description: Optional URL to test certificate against
+          example: "https://example.com"
+      required:
+        - thumbprint
+
+    CertificateValidationResult:
+      type: object
+      description: Result of certificate validation
+      properties:
+        isValid:
+          type: boolean
+          description: Whether the certificate is valid
+          example: true
+        message:
+          type: string
+          description: Validation message or error details
+          example: "Certificate is valid"
+        chainValid:
+          type: boolean
+          description: Chain validation status
+          example: true
+        revocationValid:
+          type: boolean
+          nullable: true
+          description: Revocation check status
+          example: true
+        urlTestResult:
+          type: string
+          nullable: true
+          description: URL test result if applicable
+          example: "Connection successful"
+        expirationStatus:
+          type: string
+          description: Certificate expiration status
+          example: "Valid"
+      required:
+        - isValid
+        - message
+        - chainValid
+        - expirationStatus
+
+    CertificateOperationResponse:
+      type: object
+      description: Response for certificate operations
+      properties:
+        success:
+          type: boolean
+          description: Success status
+          example: true
+        message:
+          type: string
+          description: Operation message
+          example: "Certificate removed successfully"
+        thumbprint:
+          type: string
+          nullable: true
+          description: Certificate thumbprint if applicable
+          example: "ABCDEF1234567890ABCDEF1234567890ABCDEF12"
+      required:
+        - success
+        - message
 
   securitySchemes:
     bearerAuth:

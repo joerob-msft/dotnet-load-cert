@@ -3,21 +3,35 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace AzureCertInventory.Services
 {
+    /// <summary>
+    /// Service for managing certificate operations and retrieval
+    /// </summary>
     public class CertificateService : ICertificateService
     {
         private readonly ILogger<CertificateService> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the CertificateService
+        /// </summary>
+        /// <param name="logger">The logger instance</param>
         public CertificateService(ILogger<CertificateService> logger)
         {
             _logger = logger;
         }
 
-        // Return empty list for public certificates as requested
+        /// <summary>
+        /// Return empty list for public certificates as requested
+        /// </summary>
+        /// <returns>Empty collection of certificate information</returns>
         public IEnumerable<CertificateInfo> GetPublicCertificates()
         {
             return new List<CertificateInfo>();
         }
 
+        /// <summary>
+        /// Gets all private certificates from the current user's certificate store
+        /// </summary>
+        /// <returns>Collection of private certificate information</returns>
         public IEnumerable<CertificateInfo> GetPrivateCertificates()
         {
             var certificates = new List<CertificateInfo>();
@@ -44,6 +58,69 @@ namespace AzureCertInventory.Services
             }
 
             return certificates;
+        }
+
+        /// <summary>
+        /// Gets certificates loaded via App Service (WEBSITE_LOAD_CERTIFICATES) - delegates to base implementation
+        /// </summary>
+        /// <returns>Collection of App Service loaded certificates</returns>
+        public IEnumerable<CertificateInfo> GetAppServiceCertificates()
+        {
+            return GetPrivateCertificates(); // Base implementation uses same store
+        }
+
+        /// <summary>
+        /// Loads a certificate into application memory (not supported in base implementation)
+        /// </summary>
+        /// <param name="certificateData">Base64 encoded certificate data</param>
+        /// <param name="password">Certificate password (optional)</param>
+        /// <param name="friendlyName">Friendly name for the certificate</param>
+        /// <returns>Certificate information indicating operation not supported</returns>
+        public Task<CertificateInfo> LoadCertificateAsync(string certificateData, string? password = null, string? friendlyName = null)
+        {
+            return Task.FromResult(new CertificateInfo
+            {
+                Name = "Not Supported",
+                Error = "Certificate loading not supported in base implementation. Use AppServiceCertificateService for App Service deployment.",
+                Status = "Error"
+            });
+        }
+
+        /// <summary>
+        /// Validates a certificate by thumbprint (basic implementation)
+        /// </summary>
+        /// <param name="thumbprint">Certificate thumbprint</param>
+        /// <returns>Basic validation result</returns>
+        public Task<CertificateValidationResult> ValidateCertificateAsync(string thumbprint)
+        {
+            var result = new CertificateValidationResult
+            {
+                IsValid = false,
+                Message = "Certificate validation not supported in base implementation. Use AppServiceCertificateService for full validation.",
+                ChainValid = false,
+                ExpirationStatus = "Unknown"
+            };
+
+            return Task.FromResult(result);
+        }
+
+        /// <summary>
+        /// Gets certificates currently loaded in application memory (not supported in base implementation)
+        /// </summary>
+        /// <returns>Empty collection</returns>
+        public IEnumerable<CertificateInfo> GetLoadedCertificates()
+        {
+            return new List<CertificateInfo>();
+        }
+
+        /// <summary>
+        /// Removes a certificate from application memory (not supported in base implementation)
+        /// </summary>
+        /// <param name="thumbprint">Certificate thumbprint</param>
+        /// <returns>False - operation not supported</returns>
+        public bool RemoveLoadedCertificate(string thumbprint)
+        {
+            return false;
         }
 
         private CertificateInfo GetCertificateDetails(X509Certificate2 cert, string storeName, string storeLocation)

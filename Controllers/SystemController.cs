@@ -4,6 +4,9 @@ using System.Net;
 
 namespace AzureCertInventory.Controllers
 {
+    /// <summary>
+    /// Controller for system information and environment details
+    /// </summary>
     [ApiController]
     [Route("system")]
     [Produces("application/json")]
@@ -11,6 +14,10 @@ namespace AzureCertInventory.Controllers
     {
         private readonly ILogger<SystemController> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the SystemController
+        /// </summary>
+        /// <param name="logger">The logger instance</param>
         public SystemController(ILogger<SystemController> logger)
         {
             _logger = logger;

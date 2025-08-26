@@ -5,7 +5,26 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
-builder.Services.AddSingleton<ICertificateService, CertificateService>();
+
+// Register certificate services based on environment
+var isAppService = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
+
+if (isAppService)
+{
+    // Use App Service optimized service in Azure
+    builder.Services.AddSingleton<CertificateService>();
+    builder.Services.AddSingleton<ICertificateService>(provider =>
+    {
+        var logger = provider.GetRequiredService<ILogger<AppServiceCertificateService>>();
+        var baseService = provider.GetRequiredService<CertificateService>();
+        return new AppServiceCertificateService(logger, baseService);
+    });
+}
+else
+{
+    // Use basic service for local development
+    builder.Services.AddSingleton<ICertificateService, CertificateService>();
+}
 
 // Add API documentation services
 builder.Services.AddEndpointsApiExplorer();
