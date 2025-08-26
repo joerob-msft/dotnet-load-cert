@@ -53,7 +53,28 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Add middleware to exclude certain paths from being handled by controllers
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value?.ToLowerInvariant();
+    
+    // Skip controller routing for site extension paths
+    if (path != null && (path.StartsWith("/ai/") || path.StartsWith("/.well-known/")))
+    {
+        await next();
+        return;
+    }
+    
+    await next();
+});
+
+// Map with lower order to ensure site extension routes take precedence
 app.MapRazorPages();
-app.MapControllers();
+
+// Map controllers with higher order (processed after other routes)
+var controllerGroup = app.MapGroup("api/cert-inventory")
+    .WithTags("Certificate Inventory");
+
+controllerGroup.MapControllers();
 
 app.Run();

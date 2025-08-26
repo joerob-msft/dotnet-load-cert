@@ -5,7 +5,7 @@ using System.Net;
 namespace AzureCertInventory.Controllers
 {
     [ApiController]
-    [Route("api/system")]
+    [Route("system")]
     [Produces("application/json")]
     public class SystemController : ControllerBase
     {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AzureCertInventory.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [Produces("application/json")]
     public class CertificatesController : ControllerBase
     {

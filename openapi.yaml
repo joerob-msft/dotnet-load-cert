@@ -35,7 +35,7 @@ paths:
       tags:
         - Web Pages
 
-  /api/certificates/private:
+  /api/cert-inventory/certificates/private:
     get:
       summary: Get private certificates
       description: Retrieve all private certificates from the current user's certificate store
@@ -79,7 +79,7 @@ paths:
       tags:
         - Certificates
 
-  /api/certificates/public:
+  /api/cert-inventory/certificates/public:
     get:
       summary: Get public certificates
       description: Retrieve all public certificates (currently returns empty list as per implementation)
@@ -100,7 +100,7 @@ paths:
       tags:
         - Certificates
 
-  /api/system/info:
+  /api/cert-inventory/system/info:
     get:
       summary: Get system information
       description: Retrieve system information including hostname, certificate environment variables, and app service plan details
