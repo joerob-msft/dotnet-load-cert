@@ -8,7 +8,7 @@ namespace AzureCertInventory.Controllers
     /// Controller for managing certificate operations
     /// </summary>
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/certinventory/certificates")]
     [Produces("application/json")]
     public class CertificatesController : ControllerBase
     {

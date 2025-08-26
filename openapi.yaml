@@ -35,7 +35,7 @@ paths:
       tags:
         - Web Pages
 
-  /api/cert-inventory/certificates/private:
+  /api/certinventory/certificates/private:
     get:
       summary: Get private certificates
       description: Retrieve all private certificates from the current user's certificate store
@@ -79,7 +79,7 @@ paths:
       tags:
         - Certificates
 
-  /api/cert-inventory/certificates/appservice:
+  /api/certinventory/certificates/appservice:
     get:
       summary: Get App Service certificates
       description: Retrieve certificates loaded via WEBSITE_LOAD_CERTIFICATES environment variable
@@ -102,7 +102,7 @@ paths:
       tags:
         - Certificates
 
-  /api/cert-inventory/certificates/loaded:
+  /api/certinventory/certificates/loaded:
     get:
       summary: Get loaded certificates
       description: Retrieve certificates currently loaded in application memory
@@ -119,7 +119,7 @@ paths:
       tags:
         - Certificates
 
-  /api/cert-inventory/certificates/load:
+  /api/certinventory/certificates/load:
     post:
       summary: Load certificate into memory
       description: Load a certificate into application memory (App Service compatible)
@@ -146,7 +146,7 @@ paths:
       tags:
         - Certificates
 
-  /api/cert-inventory/certificates/validate:
+  /api/certinventory/certificates/validate:
     post:
       summary: Validate certificate
       description: Validate a certificate by thumbprint with comprehensive checks
@@ -173,7 +173,7 @@ paths:
       tags:
         - Certificates
 
-  /api/cert-inventory/certificates/loaded/{thumbprint}:
+  /api/certinventory/certificates/loaded/{thumbprint}:
     delete:
       summary: Remove certificate from memory
       description: Remove a certificate from application memory
@@ -200,6 +200,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       tags:
         - Certificates
+
+  /api/certinventory/certificates/public:
     get:
       summary: Get public certificates
       description: Retrieve all public certificates (currently returns empty list as per implementation)
@@ -220,7 +222,7 @@ paths:
       tags:
         - Certificates
 
-  /api/cert-inventory/system/info:
+  /api/certinventory/system/info:
     get:
       summary: Get system information
       description: Retrieve system information including hostname, certificate environment variables, and app service plan details

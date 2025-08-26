@@ -8,7 +8,7 @@ namespace AzureCertInventory.Controllers
     /// Controller for system information and environment details
     /// </summary>
     [ApiController]
-    [Route("system")]
+    [Route("api/certinventory/system")]
     [Produces("application/json")]
     public class SystemController : ControllerBase
     {
