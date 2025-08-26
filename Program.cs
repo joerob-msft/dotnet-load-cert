@@ -69,11 +69,50 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
+// DON'T USE app.UseRouting() - this might be claiming all routes
+// app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
+// Minimal routing - only handle very specific paths
+app.MapGet("/certinventory", async context =>
+{
+    var serviceProvider = context.RequestServices;
+    var certificateService = serviceProvider.GetRequiredService<ICertificateService>();
+    
+    var certificates = certificateService.GetPrivateCertificates();
+    var hostname = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME") ?? "Unknown";
+    
+    context.Response.ContentType = "text/html";
+    await context.Response.WriteAsync($@"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Inventory</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 40px; }}
+        .cert {{ border: 1px solid #ccc; margin: 10px 0; padding: 10px; }}
+    </style>
+</head>
+<body>
+    <h1>Certificate Inventory</h1>
+    <p>Hostname: {hostname}</p>
+    <h2>Certificates:</h2>
+    {string.Join("", certificates.Select(c => $@"
+    <div class='cert'>
+        <strong>{c.Name}</strong><br>
+        Subject: {c.Subject}<br>
+        Expires: {c.ValidUntil}<br>
+        Status: {c.Status}
+    </div>"))}
+</body>
+</html>");
+});
+
+app.MapGet("/", async context =>
+{
+    context.Response.Redirect("/certinventory");
+});
 
 // Temporarily comment out controllers to test if they're causing the conflict
 // app.MapControllers();

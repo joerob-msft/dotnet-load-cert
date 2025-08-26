@@ -1,0 +1,546 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AzureCertInventory</name>
+    </assembly>
+    <members>
+        <member name="T:AzureCertInventory.Controllers.CertificatesController">
+            <summary>
+            Controller for managing certificate operations
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.#ctor(AzureCertInventory.Services.ICertificateService,Microsoft.Extensions.Logging.ILogger{AzureCertInventory.Controllers.CertificatesController})">
+            <summary>
+            Initializes a new instance of the CertificatesController
+            </summary>
+            <param name="certificateService">The certificate service</param>
+            <param name="logger">The logger instance</param>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.GetPrivateCertificates">
+            <summary>
+            Get private certificates
+            </summary>
+            <returns>List of private certificates from the current user's certificate store</returns>
+            <response code="200">Returns the list of private certificates</response>
+            <response code="500">If there was an internal server error</response>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.GetPublicCertificates">
+            <summary>
+            Get public certificates
+            </summary>
+            <returns>List of public certificates (currently returns empty list)</returns>
+            <response code="200">Returns the list of public certificates</response>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.GetAppServiceCertificates">
+            <summary>
+            Get App Service certificates (loaded via WEBSITE_LOAD_CERTIFICATES)
+            </summary>
+            <returns>List of certificates loaded by App Service</returns>
+            <response code="200">Returns the list of App Service certificates</response>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.GetLoadedCertificates">
+            <summary>
+            Get certificates loaded in application memory
+            </summary>
+            <returns>List of certificates currently loaded in memory</returns>
+            <response code="200">Returns the list of loaded certificates</response>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.LoadCertificate(AzureCertInventory.Models.CertificateImportRequest)">
+            <summary>
+            Load a certificate into application memory (App Service compatible)
+            </summary>
+            <param name="request">Certificate import request</param>
+            <returns>Certificate information if successful</returns>
+            <response code="200">Certificate loaded successfully</response>
+            <response code="400">Invalid certificate data or format</response>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.ValidateCertificate(AzureCertInventory.Models.CertificateValidationRequest)">
+            <summary>
+            Validate a certificate by thumbprint
+            </summary>
+            <param name="request">Certificate validation request</param>
+            <returns>Validation result</returns>
+            <response code="200">Validation completed</response>
+            <response code="400">Invalid thumbprint</response>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.CertificatesController.RemoveLoadedCertificate(System.String)">
+            <summary>
+            Remove a certificate from application memory
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>Operation result</returns>
+            <response code="200">Certificate removed successfully</response>
+            <response code="404">Certificate not found</response>
+        </member>
+        <member name="T:AzureCertInventory.Controllers.SystemController">
+            <summary>
+            Controller for system information and environment details
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.SystemController.#ctor(Microsoft.Extensions.Logging.ILogger{AzureCertInventory.Controllers.SystemController})">
+            <summary>
+            Initializes a new instance of the SystemController
+            </summary>
+            <param name="logger">The logger instance</param>
+        </member>
+        <member name="M:AzureCertInventory.Controllers.SystemController.GetSystemInfo">
+            <summary>
+            Get system information
+            </summary>
+            <returns>System information including hostname, certificate environment variables, and app service plan details</returns>
+            <response code="200">Returns the system information</response>
+        </member>
+        <member name="T:AzureCertInventory.Models.SystemInfo">
+            <summary>
+            System information and environment details
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.SystemInfo.Hostname">
+            <summary>
+            Current hostname
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.SystemInfo.CertificateEnvironmentVariable">
+            <summary>
+            Value of WEBSITE_LOAD_CERTIFICATES environment variable
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.SystemInfo.AppServicePlan">
+            <summary>
+            Azure App Service plan tier
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Models.ErrorResponse">
+            <summary>
+            Error response
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.ErrorResponse.Error">
+            <summary>
+            Error message
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.ErrorResponse.Details">
+            <summary>
+            Additional error details
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Models.CertificateImportRequest">
+            <summary>
+            Request model for importing certificates
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateImportRequest.CertificateData">
+            <summary>
+            Base64 encoded certificate data
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateImportRequest.Password">
+            <summary>
+            Optional password for encrypted certificates
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateImportRequest.FriendlyName">
+            <summary>
+            Optional friendly name for the certificate
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Models.CertificateValidationRequest">
+            <summary>
+            Request model for certificate validation
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationRequest.Thumbprint">
+            <summary>
+            Certificate thumbprint to validate
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationRequest.ValidateChain">
+            <summary>
+            Whether to validate the certificate chain
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationRequest.CheckRevocation">
+            <summary>
+            Whether to check certificate revocation
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationRequest.TestUrl">
+            <summary>
+            Optional URL to test certificate against
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Models.CertificateValidationResult">
+            <summary>
+            Result of certificate validation
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationResult.IsValid">
+            <summary>
+            Whether the certificate is valid
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationResult.Message">
+            <summary>
+            Validation message or error details
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationResult.ChainValid">
+            <summary>
+            Chain validation status
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationResult.RevocationValid">
+            <summary>
+            Revocation check status
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationResult.UrlTestResult">
+            <summary>
+            URL test result if applicable
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateValidationResult.ExpirationStatus">
+            <summary>
+            Certificate expiration status
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Models.CertificateOperationResponse">
+            <summary>
+            Response for successful certificate operations
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateOperationResponse.Success">
+            <summary>
+            Success status
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateOperationResponse.Message">
+            <summary>
+            Operation message
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateOperationResponse.Thumbprint">
+            <summary>
+            Certificate thumbprint if applicable
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Models.CertificateInfo">
+            <summary>
+            Information about a certificate
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.Name">
+            <summary>
+            Friendly name of the certificate or extracted from subject
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.StoreName">
+            <summary>
+            Name of the certificate store
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.StoreLocation">
+            <summary>
+            Location of the certificate store
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.Subject">
+            <summary>
+            Certificate subject
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.Issuer">
+            <summary>
+            Certificate issuer
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.SerialNumber">
+            <summary>
+            Certificate serial number
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.ValidFrom">
+            <summary>
+            Certificate valid from date in UTC
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.ValidUntil">
+            <summary>
+            Certificate valid until date in UTC
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.Status">
+            <summary>
+            Certificate status (Valid, Warning, or Expired)
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.DaysLeft">
+            <summary>
+            Number of days until certificate expires
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.Thumbprint">
+            <summary>
+            Certificate thumbprint
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.HasPrivateKey">
+            <summary>
+            Whether the certificate has a private key
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Models.CertificateInfo.Error">
+            <summary>
+            Error message if certificate processing failed
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Pages.ErrorModel">
+            <summary>
+            Page model for error handling and display
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Pages.ErrorModel.RequestId">
+            <summary>
+            Gets or sets the request ID for tracking errors
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Pages.ErrorModel.ShowRequestId">
+            <summary>
+            Gets a value indicating whether the request ID should be displayed
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Pages.ErrorModel.#ctor(Microsoft.Extensions.Logging.ILogger{AzureCertInventory.Pages.ErrorModel})">
+            <summary>
+            Initializes a new instance of the ErrorModel
+            </summary>
+            <param name="logger">The logger instance</param>
+        </member>
+        <member name="M:AzureCertInventory.Pages.ErrorModel.OnGet">
+            <summary>
+            Handles GET requests to the error page
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Pages.IndexModel">
+            <summary>
+            Page model for the main index page displaying certificate information
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Pages.IndexModel.#ctor(AzureCertInventory.Services.ICertificateService)">
+            <summary>
+            Initializes a new instance of the IndexModel
+            </summary>
+            <param name="certificateService">The certificate service</param>
+        </member>
+        <member name="P:AzureCertInventory.Pages.IndexModel.PrivateCertificates">
+            <summary>
+            Gets the collection of private certificates
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Pages.IndexModel.Hostname">
+            <summary>
+            Gets the current hostname
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Pages.IndexModel.CertificateEnvironmentVariable">
+            <summary>
+            Gets the certificate environment variable value
+            </summary>
+        </member>
+        <member name="P:AzureCertInventory.Pages.IndexModel.AppServicePlan">
+            <summary>
+            Gets the App Service plan information
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Pages.IndexModel.OnGet">
+            <summary>
+            Handles GET requests to load certificate and system information
+            </summary>
+        </member>
+        <member name="T:AzureCertInventory.Services.AppServiceCertificateService">
+            <summary>
+            App Service optimized certificate service that works with in-memory certificates
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.#ctor(Microsoft.Extensions.Logging.ILogger{AzureCertInventory.Services.AppServiceCertificateService},AzureCertInventory.Services.ICertificateService)">
+            <summary>
+            Initializes a new instance of the AppServiceCertificateService
+            </summary>
+            <param name="logger">The logger instance</param>
+            <param name="baseService">The base certificate service</param>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.GetPublicCertificates">
+            <summary>
+            Gets all public certificates
+            </summary>
+            <returns>Collection of public certificate information</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.GetPrivateCertificates">
+            <summary>
+            Gets all private certificates from the current user's certificate store
+            </summary>
+            <returns>Collection of private certificate information</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.GetAppServiceCertificates">
+            <summary>
+            Gets certificates loaded via App Service (WEBSITE_LOAD_CERTIFICATES)
+            </summary>
+            <returns>Collection of App Service loaded certificates</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.LoadCertificateAsync(System.String,System.String,System.String)">
+            <summary>
+            Loads a certificate into application memory (App Service compatible)
+            </summary>
+            <param name="certificateData">Base64 encoded certificate data</param>
+            <param name="password">Certificate password (optional)</param>
+            <param name="friendlyName">Friendly name for the certificate</param>
+            <returns>Certificate information if successful</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.ValidateCertificateAsync(System.String)">
+            <summary>
+            Validates a certificate by thumbprint
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>Validation result</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.GetLoadedCertificates">
+            <summary>
+            Gets certificates currently loaded in application memory
+            </summary>
+            <returns>Collection of in-memory certificates</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.RemoveLoadedCertificate(System.String)">
+            <summary>
+            Removes a certificate from application memory
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>True if removed successfully</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.FindCertificateInStores(System.String)">
+            <summary>
+            Finds a certificate in system stores by thumbprint
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>Certificate if found, null otherwise</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.AppServiceCertificateService.GetCertificateDetails(System.Security.Cryptography.X509Certificates.X509Certificate2,System.String,System.String)">
+            <summary>
+            Gets detailed information about a certificate
+            </summary>
+            <param name="cert">The certificate</param>
+            <param name="storeName">Store name</param>
+            <param name="storeLocation">Store location</param>
+            <returns>Certificate information</returns>
+        </member>
+        <member name="T:AzureCertInventory.Services.CertificateService">
+            <summary>
+            Service for managing certificate operations and retrieval
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.#ctor(Microsoft.Extensions.Logging.ILogger{AzureCertInventory.Services.CertificateService})">
+            <summary>
+            Initializes a new instance of the CertificateService
+            </summary>
+            <param name="logger">The logger instance</param>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.GetPublicCertificates">
+            <summary>
+            Return empty list for public certificates as requested
+            </summary>
+            <returns>Empty collection of certificate information</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.GetPrivateCertificates">
+            <summary>
+            Gets all private certificates from the current user's certificate store
+            </summary>
+            <returns>Collection of private certificate information</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.GetAppServiceCertificates">
+            <summary>
+            Gets certificates loaded via App Service (WEBSITE_LOAD_CERTIFICATES) - delegates to base implementation
+            </summary>
+            <returns>Collection of App Service loaded certificates</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.LoadCertificateAsync(System.String,System.String,System.String)">
+            <summary>
+            Loads a certificate into application memory (not supported in base implementation)
+            </summary>
+            <param name="certificateData">Base64 encoded certificate data</param>
+            <param name="password">Certificate password (optional)</param>
+            <param name="friendlyName">Friendly name for the certificate</param>
+            <returns>Certificate information indicating operation not supported</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.ValidateCertificateAsync(System.String)">
+            <summary>
+            Validates a certificate by thumbprint (basic implementation)
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>Basic validation result</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.GetLoadedCertificates">
+            <summary>
+            Gets certificates currently loaded in application memory (not supported in base implementation)
+            </summary>
+            <returns>Empty collection</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.CertificateService.RemoveLoadedCertificate(System.String)">
+            <summary>
+            Removes a certificate from application memory (not supported in base implementation)
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>False - operation not supported</returns>
+        </member>
+        <member name="T:AzureCertInventory.Services.ICertificateService">
+            <summary>
+            Service interface for certificate operations
+            </summary>
+        </member>
+        <member name="M:AzureCertInventory.Services.ICertificateService.GetPublicCertificates">
+            <summary>
+            Gets all public certificates
+            </summary>
+            <returns>Collection of public certificate information</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.ICertificateService.GetPrivateCertificates">
+            <summary>
+            Gets all private certificates from the current user's certificate store
+            </summary>
+            <returns>Collection of private certificate information</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.ICertificateService.GetAppServiceCertificates">
+            <summary>
+            Gets certificates loaded via App Service (WEBSITE_LOAD_CERTIFICATES)
+            </summary>
+            <returns>Collection of App Service loaded certificates</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.ICertificateService.LoadCertificateAsync(System.String,System.String,System.String)">
+            <summary>
+            Loads a certificate into application memory (App Service compatible)
+            </summary>
+            <param name="certificateData">Base64 encoded certificate data</param>
+            <param name="password">Certificate password (optional)</param>
+            <param name="friendlyName">Friendly name for the certificate</param>
+            <returns>Certificate information if successful</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.ICertificateService.ValidateCertificateAsync(System.String)">
+            <summary>
+            Validates a certificate by thumbprint
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>Validation result</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.ICertificateService.GetLoadedCertificates">
+            <summary>
+            Gets certificates currently loaded in application memory
+            </summary>
+            <returns>Collection of in-memory certificates</returns>
+        </member>
+        <member name="M:AzureCertInventory.Services.ICertificateService.RemoveLoadedCertificate(System.String)">
+            <summary>
+            Removes a certificate from application memory
+            </summary>
+            <param name="thumbprint">Certificate thumbprint</param>
+            <returns>True if removed successfully</returns>
+        </member>
+    </members>
+</doc>
